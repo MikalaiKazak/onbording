@@ -5,6 +5,9 @@
     <groupId>ru.otr</groupId>
     <artifactId>onboarding</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <modules>
+        <module>springwebflux</module>
+    </modules>
     <packaging>pom</packaging>
     <name>onboarding</name>
 

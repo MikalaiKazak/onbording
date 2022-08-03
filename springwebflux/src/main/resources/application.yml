@@ -1,0 +1,8 @@
+spring:
+  r2dbc:
+    url: r2dbc:postgresql://localhost:5432/testDb
+    username: root
+    password: 123
+
+app:
+  messages: Hello World, Message is hidden, News of the day
