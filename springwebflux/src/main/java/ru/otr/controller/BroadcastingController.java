@@ -1,23 +1,26 @@
 package ru.otr.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.SynchronousSink;
-import reactor.util.function.Tuple2;
 
 import java.time.Duration;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.Executors;
 
 @RestController
 @RequestMapping("api/broadcast")
+@Slf4j
 public class BroadcastingController {
 
     private final List<String> messages;
@@ -29,14 +32,18 @@ public class BroadcastingController {
 
     @GetMapping(produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     @ResponseStatus(HttpStatus.OK)
-    public Flux<String> broadcastMessages() {
-        Flux<Long> interval = Flux.interval(Duration.ofMillis(1000));
+    public Flux<ServerSentEvent<String>> broadcastMessages() {
+        return Flux.interval(Duration.ofSeconds(1))
+                .map(data -> ServerSentEvent.<String> builder()
+                        .id(String.valueOf(data))
+                        .event("EVENT_TYPE")
+                        .data(generateMessage())
+                        .build())
+                .doOnCancel(() -> log.info("Interrupted by client"));
+    }
 
-        Flux<String> result = Flux.generate((SynchronousSink<String> synchronousSink) -> {
-            int randomIndex = new Random().nextInt(messages.size());
-            synchronousSink.next(messages.get(randomIndex));
-        });
-
-        return Flux.zip(interval, result).map(Tuple2::getT2);
+    private String generateMessage() {
+        int randomIndex = new Random().nextInt(messages.size());
+        return messages.get(randomIndex);
     }
 }

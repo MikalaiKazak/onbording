@@ -13,7 +13,7 @@ import static org.springframework.web.reactive.function.server.RouterFunctions.n
 import static org.springframework.web.reactive.function.server.RouterFunctions.route;
 
 @Configuration
-public class MemberRoute {
+public class MemberRouter {
 
     @Bean
     public RouterFunction<ServerResponse> routerFunction(final MemberHandler handler) {
