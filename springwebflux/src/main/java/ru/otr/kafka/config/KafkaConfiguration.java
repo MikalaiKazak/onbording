@@ -5,13 +5,18 @@ import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.core.reactive.ReactiveKafkaConsumerTemplate;
+import org.springframework.kafka.core.reactive.ReactiveKafkaProducerTemplate;
+import org.springframework.kafka.transaction.KafkaTransactionManager;
 import reactor.kafka.receiver.ReceiverOptions;
+import reactor.kafka.sender.SenderOptions;
 import ru.otr.kafka.dto.ConsumerDto;
+import ru.otr.kafka.dto.ProducerDto;
 
 import java.util.List;
+import java.util.Map;
 
 @Configuration
-public class ReactiveKafkaConsumerConfig {
+public class KafkaConfiguration {
 
     @Bean
     public ReceiverOptions<String, ConsumerDto> kafkaReceiverOptions(
@@ -26,5 +31,11 @@ public class ReactiveKafkaConsumerConfig {
     public ReactiveKafkaConsumerTemplate<String, ConsumerDto> reactiveKafkaConsumerTemplate(
             ReceiverOptions<String, ConsumerDto> kafkaReceiverOptions) {
         return new ReactiveKafkaConsumerTemplate<>(kafkaReceiverOptions);
+    }
+
+    @Bean
+    public ReactiveKafkaProducerTemplate<String, ProducerDto> reactiveKafkaProducerTemplate(KafkaProperties properties) {
+        Map<String, Object> props = properties.buildProducerProperties();
+        return new ReactiveKafkaProducerTemplate<>(SenderOptions.create(props));
     }
 }

@@ -5,10 +5,11 @@ spring:
     password: 123
 
   kafka:
-    bootstrap-servers: localhost:9092
+    bootstrap-servers: localhost:29092,localhost:39092,localhost:49092
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      transaction-id-prefix: tx-
     consumer:
       group-id: group-a
       auto-offset-reset: earliest
@@ -17,6 +18,8 @@ spring:
       properties:
         spring.json.use.type.headers: false
         spring.json.value.default.type: ru.otr.kafka.dto.ConsumerDto
+      enable-auto-commit: false
+      isolation-level: read_committed
 
 
 app:
